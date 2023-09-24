@@ -5,7 +5,7 @@ import { io } from "socket.io-client";
 import styled from "styled-components";
 import { allUsersRoute, host } from "../utils/APIRoutes";
 import ChatContainer from "../components/ChatContainer";
-import Contacts from "../components/Contacts";
+import Contacts from "../components/Contact";
 import Welcome from "../components/Welcome";
 
 export default function Chat() {
@@ -14,17 +14,21 @@ export default function Chat() {
   const [contacts, setContacts] = useState([]);
   const [currentChat, setCurrentChat] = useState(undefined);
   const [currentUser, setCurrentUser] = useState(undefined);
-  useEffect(async () => {
-    if (!localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)) {
-      navigate("/login");
-    } else {
-      setCurrentUser(
-        await JSON.parse(
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)) {
+        navigate("/login");
+      } else {
+        const userData = await JSON.parse(
           localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
-        )
-      );
-    }
+        );
+        setCurrentUser(userData);
+      }
+    };
+  
+    fetchData();
   }, []);
+  
   useEffect(() => {
     if (currentUser) {
       socket.current = io(host);
